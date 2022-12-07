@@ -4,7 +4,6 @@
 
 # Hacer una funcion que compruebe la existencia de una ruta ya que la usamos varias veces
 
-
 # Funciones referidas al menú (MostarMenu y AccesoMenu)
 
 MostrarMenu(){
@@ -29,22 +28,19 @@ AccesoMenu(){
         read opcion
         case "$opcion" in
             1)
-                echo "Programar recogida"
                 RecogerPracticas
             ;;
         
             2) 
-                echo "Empaquetar prácticas"
                 EmpaquetarPracticas
             ;;
         
             3) 
-                echo "Ver tamaño"
                 ObtenerInformacion
             ;;
         
             4)
-                echo "Exit"
+                echo "Saliendo del programa..."
                 running=false
             ;;
         
@@ -64,30 +60,40 @@ RecogerPracticas(){
     echo -n "Asignatura cuyas prácticas desea recoger: "
     read asignatura
     echo -n "Ruta con las cuentas de los alumnos: "
+    
+    # Validamos la ruta
+    
     existeRuta=false
-    while [ $existeRuta = false]
+    while [ $existeRuta = false ]
     do
         read rutaCuentas
-        if #comprobar si existe
+        if [[ ! -d $rutaCuentas ]]
         then
-            # Imprime errores
+            InformeErrores "El directorio $rutaCuentas no existe. Intentalo de nuevo: "
         else
             existeRuta=true
         fi
     done
+    
+    
     echo -n "Ruta para almacenar prácticas: "
     read rutaPracticas
     # Si no existe se crea un nuevo directorio
-    if [[ ! -d $rutaPracticas]]
+    if [[ ! -d $rutaPracticas ]]
     then
         mkdir $rutaPracticas
     fi
-    echo -e "\nSe va a programar la recogida de las prácticas de ASO para mañanana a las 8:00. Origen: bla bla bla. Destino: bla bla bla"
+    echo -e "\nSe va a programar la recogida de las prácticas de ASO para mañanana a las 8:00. Origen: $rutaCuentas. Destino: $rutaPracticas"
     echo -n "¿Está de acuerdo? (s/n) "
     read respuesta
-    if [[ $respuesta = "s"]]
+    if [[ $respuesta = "s" ]]
     then
-        # Coger prácticas
+        dia=$(($(date +%d) +1))    # Sumamos 1 porque es al día siguiente
+        mes=$(date +%m)
+        echo "0 8 $dia $mes *(pwd)/recoge-prac.sh $rutaCuentas $rutaPracticas" >> crontab-schedule
+        crontab crontab-schedule                                                                       # Esto no va
+    else
+        echo "Volviendo al menú principal..."
     fi
 }
 
@@ -102,27 +108,39 @@ EmpaquetarPracticas(){
     echo -n "Asignatura cuyas prácticas se desea empaquetar: "
     read asignatura
     echo -n "Ruta absoluta del directorio de prácticas: "
+    
+    
     existeRuta=false
     while [ $existeRuta = false ]
     do
         read rutaPracticas
-        if [[ ! -d $path_alumnos ]]
+        if [[ ! -d $rutaPracticas ]]
         then
-            #error
+            InformeErrores "El directorio $rutaPracticas no existe. Intentalo de nuevo: "
         else
-            existeRuta
+            existeRuta=true
         fi
     done
-    echo -e "\nSe van a empaquetar las prácticas de la asignatura ASO presentes en el directorio bla bla bla"
+    
+    
+    echo -e "\nSe van a empaquetar las prácticas de la asignatura ASO presentes en el directorio $rutaPracticas"
     echo -n "¿Estás de acuerdo? (s/n) "
     read respuesta
     if [[ $respuesta == "s" ]]
     then
-        # empaquetar prácticas
+        # empaquetar prácticas TODO MAL
+        tarname=$asignatura-$(date +%y%m%d-%H%M)
+        tar -C $rutaPracticas -cvzf $rutaPracticas/$tarname.tgz     # Cosas que añadir
+        if [[ $? != 0 ]]
+        then
+            InformeErrores "El directorio no contiene prácticas para empaquetar."
+            rm *.tgz
+        #Cosas que añadir aquí
+        fi
+    else
+        echo "Volviendo al menú principal..."
     fi
 }
-
-
 
 
 
@@ -132,14 +150,25 @@ ObtenerInformacion(){
     echo -e "Menú 3 - Obtener tamaño y fecha del fichero\n"
     echo -n "Asignatura sobre la que queremos informacion: "
     read asignatura
-    echo -e "\nEl fichero generado es bla bla bla y ocupa bla bla bla bytes"
-    # Mostrar info
+    dir=${path_dict["$asignatura"]}
+    dirlen=${#dir}
+    if [[ $dirlen == 0 ]]
+    then
+        InformeErrores "La asignatura $asignatura no existe"
+    else
+        archivo=$(ls $dir | grep "^$asignatura")
+        tamanio=$(stat -c%s "$dir/$file")
+        echo "El fichero generado es $archivo y ocupa $tamanio bytes."
+    fi
 }
+
+
+
 
 # Registrar errores
 
 InformeErrores(){
-    echo "bla bla bla en bla bla bla y metiendolo en un archivo llamado informe-prac.log"
+    echo "$(date +%d-%m-%Y)	$(date +%H:%M)	$1" | tee -a informe-prac.log
 }
 
 
