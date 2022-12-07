@@ -56,7 +56,7 @@ AccesoMenu(){
 # Recogida de prácticas
 
 RecogerPracticas(){
-    echo -e "Menú 1 - Prgramar recogida de prácticas\m"
+    echo -e "Menú 1 - Programar recogida de prácticas\n"
     echo -n "Asignatura cuyas prácticas desea recoger: "
     read asignatura
     echo -n "Ruta con las cuentas de los alumnos: "
@@ -67,7 +67,7 @@ RecogerPracticas(){
     while [ $existeRuta = false ]
     do
         read rutaCuentas
-        if [[ ! -d $rutaCuentas ]]
+        if [ ! -d $rutaCuentas ]
         then
             InformeErrores "El directorio $rutaCuentas no existe. Intentalo de nuevo: "
         else
@@ -79,19 +79,19 @@ RecogerPracticas(){
     echo -n "Ruta para almacenar prácticas: "
     read rutaPracticas
     # Si no existe se crea un nuevo directorio
-    if [[ ! -d $rutaPracticas ]]
+    if [ ! -d $rutaPracticas ]
     then
         mkdir $rutaPracticas
     fi
     echo -e "\nSe va a programar la recogida de las prácticas de ASO para mañanana a las 8:00. Origen: $rutaCuentas. Destino: $rutaPracticas"
     echo -n "¿Está de acuerdo? (s/n) "
     read respuesta
-    if [[ $respuesta = "s" ]]
+    if [ $respuesta = "s" ]
     then
         dia=$(($(date +%d) +1))    # Sumamos 1 porque es al día siguiente
         mes=$(date +%m)
-        echo "0 8 $dia $mes *(pwd)/recoge-prac.sh $rutaCuentas $rutaPracticas" >> crontab-schedule
-        crontab crontab-schedule                                                                       # Esto no va
+        echo "0 8 $dia $mes * $(pwd)/recoge-prac.sh $rutaCuentas $rutaPracticas" >>crontab-schedule
+        crontab crontab-schedule                                                                     
     else
         echo "Volviendo al menú principal..."
     fi
@@ -173,3 +173,5 @@ InformeErrores(){
 
 
 AccesoMenu
+
+
