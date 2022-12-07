@@ -1,5 +1,10 @@
 #!/bin/bash
 
+
+
+# Hacer una funcion que compruebe la existencia de una ruta ya que la usamos varias veces
+
+
 # Funciones referidas al menú (MostarMenu y AccesoMenu)
 
 MostrarMenu(){
@@ -51,6 +56,7 @@ AccesoMenu(){
 }
 
 
+
 # Recogida de prácticas
 
 RecogerPracticas(){
@@ -58,14 +64,35 @@ RecogerPracticas(){
     echo -n "Asignatura cuyas prácticas desea recoger: "
     read asignatura
     echo -n "Ruta con las cuentas de los alumnos: "
-    read rutaCuentas
+    existeRuta=false
+    while [ $existeRuta = false]
+    do
+        read rutaCuentas
+        if #comprobar si existe
+        then
+            # Imprime errores
+        else
+            existeRuta=true
+        fi
+    done
     echo -n "Ruta para almacenar prácticas: "
     read rutaPracticas
+    # Si no existe se crea un nuevo directorio
+    if [[ ! -d $rutaPracticas]]
+    then
+        mkdir $rutaPracticas
+    fi
     echo -e "\nSe va a programar la recogida de las prácticas de ASO para mañanana a las 8:00. Origen: bla bla bla. Destino: bla bla bla"
     echo -n "¿Está de acuerdo? (s/n) "
     read respuesta
-    
+    if [[ $respuesta = "s"]]
+    then
+        # Coger prácticas
+    fi
 }
+
+
+
 
 
 # Empaquetar prácticas de la asignatura
@@ -75,12 +102,29 @@ EmpaquetarPracticas(){
     echo -n "Asignatura cuyas prácticas se desea empaquetar: "
     read asignatura
     echo -n "Ruta absoluta del directorio de prácticas: "
-    read rutaPracticas
+    existeRuta=false
+    while [ $existeRuta = false ]
+    do
+        read rutaPracticas
+        if [[ ! -d $path_alumnos ]]
+        then
+            #error
+        else
+            existeRuta
+        fi
+    done
     echo -e "\nSe van a empaquetar las prácticas de la asignatura ASO presentes en el directorio bla bla bla"
     echo -n "¿Estás de acuerdo? (s/n) "
     read respuesta
-    
+    if [[ $respuesta == "s" ]]
+    then
+        # empaquetar prácticas
+    fi
 }
+
+
+
+
 
 # Obtener el tamaño y fecha del fichero
 
@@ -89,9 +133,14 @@ ObtenerInformacion(){
     echo -n "Asignatura sobre la que queremos informacion: "
     read asignatura
     echo -e "\nEl fichero generado es bla bla bla y ocupa bla bla bla bytes"
-    
+    # Mostrar info
 }
 
+# Registrar errores
+
+InformeErrores(){
+    echo "bla bla bla en bla bla bla y metiendolo en un archivo llamado informe-prac.log"
+}
 
 
 AccesoMenu
