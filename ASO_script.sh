@@ -115,7 +115,7 @@ EmpaquetarPracticas(){
     while [ $existeRuta = false ]
     do
         read rutaPracticas
-        if [[ ! -d $rutaPracticas ]]
+        if [ ! -d $rutaPracticas ]
         then
             InformeErrores "El directorio $rutaPracticas no existe. Intentalo de nuevo: "
         else
@@ -127,12 +127,12 @@ EmpaquetarPracticas(){
     echo -e "\nSe van a empaquetar las prácticas de la asignatura ASO presentes en el directorio $rutaPracticas"
     echo -n "¿Estás de acuerdo? (s/n) "
     read respuesta
-    if [[ $respuesta == "s" ]]
+    if [ $respuesta = "s" ]
     then
         # empaquetar prácticas TODO MAL
         tarname=$asignatura-$(date +%y%m%d-%H%M)
         tar -C $rutaPracticas -cvzf $rutaPracticas/$tarname.tgz     # Cosas que añadir
-        if [[ $? != 0 ]]
+        if [ $? != 0 ]
         then
             InformeErrores "El directorio no contiene prácticas para empaquetar."
             rm *.tgz
@@ -153,7 +153,7 @@ ObtenerInformacion(){
     read asignatura
     dir=${path_dict["$asignatura"]}
     dirlen=${#dir}
-    if [[ $dirlen == 0 ]]
+    if [ $dirlen == 0 ]
     then
         InformeErrores "La asignatura $asignatura no existe"
     else
