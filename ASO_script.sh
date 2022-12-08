@@ -103,14 +103,13 @@ RecogerPracticas(){
 
 
 # Empaquetar prácticas de la asignatura
-
-EmpaquetarPracticas(){
+EmpaquetarPracticas ()
+{
     echo -e "Menú 2 - Empaquetar prácticas de la asignatura\n"
     echo -n "Asignatura cuyas prácticas se desea empaquetar: "
     read asignatura
     echo -n "Ruta absoluta del directorio de prácticas: "
-    
-    
+
     existeRuta=false
     while [ $existeRuta = false ]
     do
@@ -122,26 +121,28 @@ EmpaquetarPracticas(){
             existeRuta=true
         fi
     done
-    
-    
+
+
+
     echo -e "\nSe van a empaquetar las prácticas de la asignatura ASO presentes en el directorio $rutaPracticas"
     echo -n "¿Estás de acuerdo? (s/n) "
     read respuesta
     if [ $respuesta = "s" ]
-    then
-        # empaquetar prácticas TODO MAL
-        tarname=$asignatura-$(date +%y%m%d-%H%M)
-        tar -C $rutaPracticas -cvzf $rutaPracticas/$tarname.tgz     # Cosas que añadir
-        if [ $? != 0 ]
-        then
-            InformeErrores "El directorio no contiene prácticas para empaquetar."
-            rm *.tgz
-        #Cosas que añadir aquí
-        fi
+	then
+
+		tarname=$asignatura-$(date +%y%m%d-%H%M)
+		tar -C $rutaPracticas -cvzf $rutaPracticas/$tarname.tgz $rutaPracticas/*.sh 2>/dev/null
+		
+		if [ $? != 0 ]
+		then
+			InformeErrores "No hay prácticas en el directorio dado"
+			rm *.tgz
+		fi
     else
-        echo "Volviendo al menú principal..."
-    fi
+    echo "Volviendo al menú principal..."
+	fi
 }
+
 
 
 
