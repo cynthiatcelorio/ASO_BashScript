@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Funciones referidas al menú (MostarMenu y AccesoMenu)
+# Funciones referidas al menú e inicio del programa (MostarMenu y IniciarPrograma)
 
 MostrarMenu(){
     echo "\nASO 22/23 - Práctica 6"
@@ -16,7 +16,7 @@ MostrarMenu(){
     echo -n "Elige una opción: "
 }
 
-AccesoMenu(){
+IniciarPrograma(){
     running=true
     while [ $running = true ] 
     do
@@ -57,7 +57,7 @@ RecogerPracticas(){
     read asignatura
     echo -n "Ruta con las cuentas de los alumnos: "
     
-    # Validamos la ruta
+    # Comprobamos que la ruta dada existe y si no enviamos un error
     
     existeRuta=false
     while [ $existeRuta = false ]
@@ -71,20 +71,24 @@ RecogerPracticas(){
         fi
     done
     
+    # Comprobamos que la ruta existe, si no se crea un nuevo directorio
     
     echo -n "Ruta para almacenar prácticas: "
     read rutaPracticas
-    # Si no existe se crea un nuevo directorio
     if [ ! -d $rutaPracticas ]
     then
         mkdir $rutaPracticas
     fi
-    echo "\nSe va a programar la recogida de las prácticas de ASO para mañanana a las 8:00. Origen: $rutaCuentas. Destino: $rutaPracticas"
+    
+    echo "\nSe va a programar la recogida de las prácticas de ASO para mañana a las 8:00. Origen: $rutaCuentas. Destino: $rutaPracticas"
     echo -n "¿Está de acuerdo? (s/n) "
     read respuesta
+    
+    # Programamos la tarea
+    
     if [ $respuesta = "s" ]
-    then
-        day=$(date "+%d" --date="-1 days ago")    # Con esta operación le incrementamos en 1 el valor del día
+    then	
+        day=$(date "+%d" --date="-1 days ago")    		# Con esta operación le incrementamos en 1 el valor del día
         month=$(date "+%m")
         echo "00 08 $day $month * sh $(pwd)/holapractica.sh $rutaCuentas $rutaPracticas" >> crontabAux 
         crontab crontabAux
@@ -100,13 +104,15 @@ RecogerPracticas(){
 
 
 # Empaquetar prácticas de la asignatura
-EmpaquetarPracticas ()
-{
+
+EmpaquetarPracticas (){
     echo "Menú 2 - Empaquetar prácticas de la asignatura\n"
     echo -n "Asignatura cuyas prácticas se desea empaquetar: "
     read asignatura
     echo -n "Ruta absoluta del directorio de prácticas: "
-
+    
+    # Comprobamos que la ruta dada existe y si no enviamos un error
+    
     existeRuta=false
     while [ $existeRuta = false ]
     do
@@ -119,7 +125,7 @@ EmpaquetarPracticas ()
         fi
     done
 
-
+    # Se empaquetan las prácticas
 
     echo "\nSe van a empaquetar las prácticas de la asignatura ASO presentes en el directorio $rutaPracticas"
     echo -n "¿Estás de acuerdo? (s/n) "
@@ -130,10 +136,12 @@ EmpaquetarPracticas ()
 		tarname=$asignatura-$(date +%y%m%d-%H%M)
 		tar -C $rutaPracticas -cvzf $rutaPracticas/$tarname.tgz $rutaPracticas/*.sh 2>/dev/null
 		
+		# Se comprueba si en el directorio dado hay prácticas que empaquetar
+		
 		if [ $? != 0 ]
 		then
 			InformeErrores "No hay prácticas en el directorio dado"
-			rm *.tgz
+			rm *.tgz							# Se procede a borrar el archivo creado sin prácticas
 		fi
     else
     echo "Volviendo al menú principal..."
@@ -150,12 +158,13 @@ ObtenerInformacion(){
     echo -n "Asignatura sobre la que queremos informacion: "
     read asignatura
     
+    # Obtenemos la ruta del último archivo comprimido que contenga el nombre de la asignatura dada
+    
     rutaUltimoArchivo=$(find -type f -iname "*.tgz" | find -iname "$asignatura*" |  tail -n 1)
     
     if [ -z "$rutaUltimoArchivo" ]
     then
         InformeErrores "La asignatura $asignatura no tiene ficheros creados."
-   
     else
     	archivo=$(basename $rutaUltimoArchivo)
         tamanio=$(stat -c%s $rutaUltimoArchivo)
@@ -173,6 +182,6 @@ InformeErrores(){
 }
 
 
-AccesoMenu
+IniciarPrograma
 
 
