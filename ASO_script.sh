@@ -88,10 +88,11 @@ RecogerPracticas(){
     read respuesta
     if [ $respuesta = "s" ]
     then
-        dia=$(($(date +%d) +1))    # Sumamos 1 porque es al día siguiente
-        mes=$(date +%m)
-        echo "0 8 $dia $mes * $(pwd)/recoge-prac.sh $rutaCuentas $rutaPracticas" >>crontab-schedule
-        crontab crontab-schedule                                                                     
+        day=$(date "+%d" --date="-1 days ago")    # Con esta operación le incrementamos en 1 el valor del día
+        month=$(date "+%m")
+        echo "00 08 $day $month * sh $(pwd)/holapractica.sh $rutaCuentas $rutaPracticas" >> crontabAux 
+        crontab crontabAux 
+                                                            
     else
         echo "Volviendo al menú principal..."
     fi
