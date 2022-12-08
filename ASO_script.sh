@@ -152,18 +152,19 @@ ObtenerInformacion(){
     echo -e "Menú 3 - Obtener tamaño y fecha del fichero\n"
     echo -n "Asignatura sobre la que queremos informacion: "
     read asignatura
-    dir=${path_dict["$asignatura"]}
-    dirlen=${#dir}
-    if [ $dirlen == 0 ]
+    
+    rutaUltimoArchivo=$(find -iname "*$asignatura*" | find -type f -iname "*.tgz" | tail -n 1)
+    
+    if [ -z "$rutaUltimoArchivo" ]
     then
-        InformeErrores "La asignatura $asignatura no existe"
+        InformeErrores "La asignatura $asignatura no tiene ficheros creados"
+   
     else
-        archivo=$(ls $dir | grep "^$asignatura")
-        tamanio=$(stat -c%s "$dir/$file")
-        echo "El fichero generado es $archivo y ocupa $tamanio bytes."
+        tamanio=$(stat -c%s $rutaUltimoArchivo)
+        echo "El último fichero generado es $archivo y ocupa $tamanio bytes."
     fi
+    rutaUltimoArchivo=0
 }
-
 
 
 
