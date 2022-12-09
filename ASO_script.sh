@@ -90,7 +90,7 @@ RecogerPracticas(){
     then	
         day=$(date "+%d" --date="-1 days ago")    		# Con esta operación le incrementamos en 1 el valor del día
         month=$(date "+%m")
-        echo "00 08 $day $month * sh $(pwd)/holapractica.sh $rutaCuentas $rutaPracticas" >> crontabAux 
+        echo "00 08 $day $month * sh $(pwd)/recoge-prac.sh $rutaCuentas $rutaPracticas" >> crontabAux 
         crontab crontabAux
 	echo "Se ha programado correctamente la recogida de prácticas."
                                                             
